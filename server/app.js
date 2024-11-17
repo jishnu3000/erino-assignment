@@ -29,7 +29,7 @@ app.use(express.static("build"));
 app.use(express.json());
 app.use(middleware.requestLogger);
 
-app.use("/", contactsRouter);
+app.use("/contacts", contactsRouter);
 
 app.use(middleware.unknownEndpoint);
 app.use(middleware.errorHandler);
