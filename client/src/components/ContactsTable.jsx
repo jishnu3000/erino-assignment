@@ -10,7 +10,6 @@ import {
   IconButton,
   TextField,
   Paper,
-  Button,
 } from "@mui/material";
 import { Edit, Delete, Save, Cancel } from "@mui/icons-material";
 
@@ -20,7 +19,7 @@ const ContactsTable = ({ contacts, onUpdate, onDelete }) => {
   const [editRowIndex, setEditRowIndex] = useState(null);
   const [editableRow, setEditableRow] = useState({});
 
-  const handleChangePage = (newPage) => {
+  const handleChangePage = (_, newPage) => {
     setPage(newPage);
   };
 
@@ -40,7 +39,7 @@ const ContactsTable = ({ contacts, onUpdate, onDelete }) => {
   };
 
   const handleSaveEdit = () => {
-    onUpdate(editableRow); // Send updated row data to the parent
+    onUpdate(editableRow);
     setEditRowIndex(null);
     setEditableRow({});
   };
@@ -49,42 +48,42 @@ const ContactsTable = ({ contacts, onUpdate, onDelete }) => {
     setEditableRow({ ...editableRow, [field]: value });
   };
 
+  const fieldsToDisplay = [
+    { key: "firstName", label: "First Name" },
+    { key: "lastName", label: "Last Name" },
+    { key: "email", label: "Email" },
+    { key: "phone", label: "Phone Number" },
+    { key: "company", label: "Company" },
+    { key: "jobTitle", label: "Job Title" },
+  ];
+
   return (
     <Paper>
       <TableContainer>
         <Table>
           <TableHead>
             <TableRow>
-              {[
-                "First Name",
-                "Last Name",
-                "Email",
-                "Phone Number",
-                "Company",
-                "Job Title",
-                "Actions",
-              ].map((header) => (
-                <TableCell key={header}>{header}</TableCell>
+              {fieldsToDisplay.map(({ label }) => (
+                <TableCell key={label}>{label}</TableCell>
               ))}
+              <TableCell>Actions</TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
             {contacts
               .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
               .map((contact, index) => (
-                <TableRow key={index}>
-                  {Object.keys(contact).map((field, idx) => (
-                    <TableCell key={idx}>
+                <TableRow key={contact.id || index}>
+                  {fieldsToDisplay.map(({ key }) => (
+                    <TableCell key={key}>
                       {editRowIndex === index ? (
                         <TextField
-                          value={editableRow[field]}
-                          onChange={(e) =>
-                            handleFieldChange(field, e.target.value)
-                          }
+                          value={editableRow[key] || ""}
+                          onChange={(e) => handleFieldChange(key, e.target.value)}
                           fullWidth
                         />
                       ) : (
-                        contact[field]
+                        contact[key]
                       )}
                     </TableCell>
                   ))}
@@ -100,7 +99,7 @@ const ContactsTable = ({ contacts, onUpdate, onDelete }) => {
                       </>
                     ) : (
                       <>
-                        <IconButton
+                        <IconButton 
                           onClick={() => handleEditClick(index, contact)}
                         >
                           <Edit />
